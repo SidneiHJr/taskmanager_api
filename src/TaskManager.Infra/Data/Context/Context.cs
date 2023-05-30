@@ -9,6 +9,11 @@ namespace TaskManager.Infra.Data
                 
         }
 
+        public Context(DbContextOptions<Context> options) : base(options)
+        {
+                
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var property in modelBuilder.Model.GetEntityTypes().SelectMany(

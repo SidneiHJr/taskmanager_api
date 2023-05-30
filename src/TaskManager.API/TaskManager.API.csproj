@@ -11,4 +11,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TaskManager.Api.Core\TaskManager.Api.Core.csproj" />
+    <ProjectReference Include="..\TaskManager.Infra\TaskManager.Infra.csproj" />
+  </ItemGroup>
+
 </Project>
