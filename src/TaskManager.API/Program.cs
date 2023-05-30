@@ -22,10 +22,10 @@ void ConfigureServices (IServiceCollection services)
 
 void Configure(WebApplication app)
 {
+    app.UseSwaggerConfig();
 
     app.UseHttpsRedirection();
     app.UseAuthorization();
     app.MapControllers();
 
-    app.UseSwaggerConfig(); 
 }

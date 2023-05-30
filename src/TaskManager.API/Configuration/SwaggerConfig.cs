@@ -6,6 +6,7 @@ namespace TaskManager.API.Configuration
     {
         public static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
         {
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo()
@@ -52,7 +53,7 @@ namespace TaskManager.API.Configuration
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("v1/swagger.json", "v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
             });
 
             return app;
