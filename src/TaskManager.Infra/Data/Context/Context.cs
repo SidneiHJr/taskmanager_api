@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskManager.Infra.Data
 {
-    public class Context : DbContext
+    public class Context : IdentityDbContext<IdentityUser>
     {
         protected Context()
         {
