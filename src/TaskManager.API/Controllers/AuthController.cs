@@ -14,6 +14,11 @@ namespace TaskManager.API.Controllers
         {
         }
 
+        /// <summary>
+        /// Register new user
+        /// </summary>
+        /// <param name="model">The user registration model</param>
+        /// <returns>A response indicating the status of the registration</returns>
         [HttpPost("register")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(OkModel), 200)]
@@ -23,6 +28,31 @@ namespace TaskManager.API.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
+            //Verificar senha e confirmacao senha
+            //Tentativa de criar usuario (sem a senha)
+            //atribuir role usuario
+            //se sucesso, atribuir senha pra usuario
+
+            var identityUser = new IdentityUser()
+            {
+                Email = model.Email,
+                UserName = model.Name,
+                
+            };
+
+            var result = await _userManager.CreateAsync(identityUser);
+
+            if(result.Succeeded)
+            {
+
+            }
+
+            foreach (var error in result.Errors)
+            {
+                _notifiable.AddNotification("Registry Error", error.Description);
+            }
+
+            await _userManager.DeleteAsync(identityUser);
 
             return CustomResponse();
         }

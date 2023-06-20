@@ -30,6 +30,8 @@ namespace TaskManager.API.Configuration
 
             app.UseRouting();
 
+            app.UseIdentityConfig();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

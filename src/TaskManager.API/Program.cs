@@ -21,8 +21,9 @@ void ConfigureServices (IServiceCollection services, IConfiguration configuratio
 {
 
     services.AddEndpointsApiExplorer();
-
+    services.AddDependencyConfig();
     services.AddSwaggerConfig();
+    services.AddIdentityConfig();
     services.AddApiConfig(configuration);
 }
 

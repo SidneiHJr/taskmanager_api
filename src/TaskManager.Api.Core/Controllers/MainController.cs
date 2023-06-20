@@ -5,6 +5,7 @@ using TaskManager.Core.Interfaces;
 
 namespace TaskManager.Api.Core.Controllers
 {
+    [ApiController]
     public abstract class MainController : ControllerBase
     {
         protected ICollection<string> Erros = new List<string>();
