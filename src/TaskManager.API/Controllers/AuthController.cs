@@ -2,23 +2,24 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Api.Core.Controllers;
 using TaskManager.Api.Core.Models;
+using TaskManager.Core.Entities;
 using TaskManager.Core.Interfaces;
 
 namespace TaskManager.API.Controllers
 {
+    [Route("api/auth")]
     public class AuthController : MainController
     {
         private readonly UserManager<IdentityUser> _userManager;
 
-        public AuthController(INotifiable notifiable) : base(notifiable)
+        public AuthController(
+            INotifiable notifiable, 
+            UserManager<IdentityUser> userManager) : base(notifiable)
         {
+            _userManager = userManager;
         }
 
-        /// <summary>
-        /// Register new user
-        /// </summary>
-        /// <param name="model">The user registration model</param>
-        /// <returns>A response indicating the status of the registration</returns>
+
         [HttpPost("register")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(OkModel), 200)]
@@ -28,23 +29,22 @@ namespace TaskManager.API.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            //Verificar senha e confirmacao senha
-            //Tentativa de criar usuario (sem a senha)
-            //atribuir role usuario
-            //se sucesso, atribuir senha pra usuario
-
             var identityUser = new IdentityUser()
             {
-                Email = model.Email,
-                UserName = model.Name,
-                
+                UserName = model.Email,
+                Email = model.Email
+
             };
 
             var result = await _userManager.CreateAsync(identityUser);
 
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
+                var user = InsertUser(identityUser.Id, model.Name, model.Email);
+                //criar usuario
+                //salvar senha usuario e aspnetuser
 
+                return CustomResponse();
             }
 
             foreach (var error in result.Errors)
@@ -53,8 +53,21 @@ namespace TaskManager.API.Controllers
             }
 
             await _userManager.DeleteAsync(identityUser);
+            //atribuir role usuario
+            //se sucesso, atribuir senha pra usuario
+
 
             return CustomResponse();
+        }
+
+        private async Task<User> InsertUser(string id, string name, string email)
+        {
+            var userId = Guid.Parse(id);
+            var user = new User(userId, name, email);
+
+            //await _userService.InsertAsync(user);
+
+            return user;
         }
     }
 }

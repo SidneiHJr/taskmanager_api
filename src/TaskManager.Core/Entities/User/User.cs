@@ -10,8 +10,9 @@ namespace TaskManager.Core.Entities
 
         }
 
-        public User(string name, string email)
+        public User(Guid id, string name, string email)
         {
+            Id = id;
             Name = name;
             Email = email;
             Active = true;

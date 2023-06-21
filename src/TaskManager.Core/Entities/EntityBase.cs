@@ -13,17 +13,15 @@
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
 
-        public void NewInsertion(string user)
+        public void NewInsertion()
         {
             CreatedDate = DateTime.UtcNow;
             ModifiedDate = DateTime.UtcNow;
-            CreatedBy = user;
         }
 
-        public void NewUpdate(string user)
+        public void NewUpdate()
         {
             ModifiedDate = DateTime.UtcNow;
-            ModifiedBy = user;
         }
 
     }

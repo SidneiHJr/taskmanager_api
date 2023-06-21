@@ -1,33 +1,37 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using TaskManager.Api.Core.Controllers;
+using TaskManager.Core.Interfaces;
 
 namespace TaskManager.API.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class TestController : ControllerBase
+    [Route("api/test")]
+    public class TestController : MainController
     {
-        private static readonly string[] Summaries = new[]
+        private readonly UserManager<IdentityUser> _userManager;
+        public TestController(
+            INotifiable notifiable, 
+            UserManager<IdentityUser> userManager) : base(notifiable)
         {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
-        private readonly ILogger<TestController> _logger;
-
-        public TestController(ILogger<TestController> logger)
-        {
-            _logger = logger;
+            _userManager = userManager;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet]
+        public IActionResult Test()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            return CustomResponse("Test");
+        }
+
+        [HttpPost("delete-user")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user != null)
             {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+                await _userManager.DeleteAsync(user);
+            }
+
+            return CustomResponse();
         }
     }
 }
