@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManager.Api.Core.Controllers;
 using TaskManager.Api.Core.Models;
 using TaskManager.Core.Entities;
+using TaskManager.Core.Enums;
 using TaskManager.Core.Interfaces;
 
 namespace TaskManager.API.Controllers
@@ -11,12 +12,23 @@ namespace TaskManager.API.Controllers
     public class AuthController : MainController
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IPasswordHasher<IdentityUser> _passwordHasher;
+
+        private readonly IUserService _userService;
 
         public AuthController(
-            INotifiable notifiable, 
-            UserManager<IdentityUser> userManager) : base(notifiable)
+            INotifiable notifiable,
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IPasswordHasher<IdentityUser> passwordHasher,
+            IUserService userService
+            ) : base(notifiable)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
+            _userService = userService;
+            _passwordHasher = passwordHasher;
         }
 
 
@@ -40,11 +52,34 @@ namespace TaskManager.API.Controllers
 
             if (result.Succeeded)
             {
-                var user = InsertUser(identityUser.Id, model.Name, model.Email);
-                //criar usuario
-                //salvar senha usuario e aspnetuser
+                var userId = await InsertUser(identityUser.Id, model.Name, model.Email);
 
-                return CustomResponse();
+                await CreateRoles();
+
+                await _userManager.AddToRoleAsync(identityUser, UserProfileEnum.User.ToString());
+
+                if (!_notifiable.HasNotification)
+                {
+                    identityUser = await _userManager.FindByIdAsync(userId.ToString());
+
+                    if(identityUser != null)
+                    {
+                        var hash = _passwordHasher.HashPassword(identityUser, model.Password);
+                        identityUser.SecurityStamp = Guid.NewGuid().ToString();
+                        identityUser.PasswordHash = hash;
+                        await _userManager.UpdateAsync(identityUser);
+
+                        return CustomResponse(userId);
+
+                    }
+
+                    _notifiable.AddNotification("IdentityError", "Error fetching user");
+
+                }
+
+                if (userId != Guid.Empty)
+                    await _userService.DeleteAsync(userId);
+
             }
 
             foreach (var error in result.Errors)
@@ -53,21 +88,31 @@ namespace TaskManager.API.Controllers
             }
 
             await _userManager.DeleteAsync(identityUser);
-            //atribuir role usuario
-            //se sucesso, atribuir senha pra usuario
-
 
             return CustomResponse();
         }
 
-        private async Task<User> InsertUser(string id, string name, string email)
+        private async Task<Guid> InsertUser(string id, string name, string email)
         {
-            var userId = Guid.Parse(id);
-            var user = new User(userId, name, email);
+            var guidId = Guid.Parse(id);
 
-            //await _userService.InsertAsync(user);
+            var userId = await _userService.InsertAsync(guidId, name, email);
 
-            return user;
+            return userId;
+        }
+
+        private async Task CreateRoles()
+        {
+            string[] rolesNames = {
+                UserProfileEnum.User.ToString(),
+            };
+
+            foreach(var role in rolesNames)
+            {
+                var roleExist = await _roleManager.RoleExistsAsync(role);
+                if(!roleExist)
+                    await _roleManager.CreateAsync(new IdentityRole(role));
+            }
         }
     }
 }

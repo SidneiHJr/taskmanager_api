@@ -12,6 +12,7 @@ namespace TaskManager.API.Configuration
         public static IServiceCollection AddDependencyConfig(this IServiceCollection services)
         {
             services.AddScoped(typeof(IService<>), typeof(Service<>));
+            services.AddScoped<IUserService, UserService>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 

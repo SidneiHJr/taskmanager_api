@@ -1,12 +1,20 @@
 ﻿using FinancialControl.Core.Entities;
 using FinancialControl.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Infra.Data;
 
 namespace FinancialControl.Infra.Data
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
     {
-        public DbSet<TEntity> Table => throw new NotImplementedException();
+        public readonly Context _context;
+
+        public Repository(Context context)
+        {
+            _context = context;
+        }
+
+        public DbSet<TEntity> Table => _context.Set<TEntity>();
 
         public async Task<IQueryable<TEntity>> GetAsync() 
         {
