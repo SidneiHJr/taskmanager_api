@@ -17,6 +17,13 @@ namespace TaskManager.Domain.Services
         {
             var user = new User(userId, name, email);
 
+            await Validate(user);
+
+            if (_notifiable.HasNotification)
+                return Guid.Empty;
+
+            user.NewInsertion();
+
             await _repository.InsertAsync(user);
             var created = await _unitOfWork.CommitAsync();
 

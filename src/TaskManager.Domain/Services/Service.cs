@@ -62,9 +62,9 @@ namespace TaskManager.Domain.Services
         {
             await _repository.DeleteAsync(id);
 
-            var sucesso = await _unitOfWork.CommitAsync();
+            var success = await _unitOfWork.CommitAsync();
 
-            if (!sucesso)
+            if (!success)
                 _notifiable.AddNotification("Delete", $"Error deleting record {id}");
 
             await Task.CompletedTask;
@@ -76,8 +76,8 @@ namespace TaskManager.Domain.Services
 
             if (method != null)
             {
-                var erros = method.Invoke(item, null);
-                _notifiable.AddNotifications(erros as IEnumerable<string>);
+                var errors = method.Invoke(item, null);
+                _notifiable.AddNotifications(errors as IEnumerable<string>);
             }
 
             await Task.CompletedTask;

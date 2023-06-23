@@ -28,11 +28,16 @@ namespace TaskManager.API.Controllers
         [HttpPost("delete-user")]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            var identityUser = await _userManager.FindByIdAsync(id);
+            if (identityUser != null)
+                await _userManager.DeleteAsync(identityUser);
+
+            var guidId = Guid.Parse(id);
+
+            var user = await _userService.GetAsync(guidId);
+
             if (user != null)
-            {
-                await _userManager.DeleteAsync(user);
-            }
+                await _userService.DeleteAsync(user.Id);
 
             return CustomResponse();
         }

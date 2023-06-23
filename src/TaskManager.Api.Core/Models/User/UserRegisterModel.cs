@@ -10,6 +10,5 @@ namespace TaskManager.Api.Core.Models
 
         [Compare("Password", ErrorMessage = "Password and Confirmation Password must be the same")]
         public string ConfirmationPassword { get; set; }
-
     }
 }

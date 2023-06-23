@@ -48,7 +48,7 @@ namespace TaskManager.API.Controllers
 
             };
 
-            var result = await _userManager.CreateAsync(identityUser);
+            var result = await _userManager.CreateAsync(identityUser, model.Password);
 
             if (result.Succeeded)
             {
@@ -59,23 +59,7 @@ namespace TaskManager.API.Controllers
                 await _userManager.AddToRoleAsync(identityUser, UserProfileEnum.User.ToString());
 
                 if (!_notifiable.HasNotification)
-                {
-                    identityUser = await _userManager.FindByIdAsync(userId.ToString());
-
-                    if(identityUser != null)
-                    {
-                        var hash = _passwordHasher.HashPassword(identityUser, model.Password);
-                        identityUser.SecurityStamp = Guid.NewGuid().ToString();
-                        identityUser.PasswordHash = hash;
-                        await _userManager.UpdateAsync(identityUser);
-
-                        return CustomResponse(userId);
-
-                    }
-
-                    _notifiable.AddNotification("IdentityError", "Error fetching user");
-
-                }
+                    return CustomResponse(userId);
 
                 if (userId != Guid.Empty)
                     await _userService.DeleteAsync(userId);
