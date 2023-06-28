@@ -25,7 +25,7 @@ namespace TaskManager.API.Controllers
             return CustomResponse("Test");
         }
 
-        [HttpPost("delete-user")]
+        [HttpDelete("delete-user")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var identityUser = await _userManager.FindByIdAsync(id);

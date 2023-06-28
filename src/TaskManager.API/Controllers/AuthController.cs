@@ -54,12 +54,13 @@ namespace TaskManager.API.Controllers
             {
                 var userId = await InsertUser(identityUser.Id, model.Name, model.Email);
 
-                await CreateRoles();
-
-                await _userManager.AddToRoleAsync(identityUser, UserProfileEnum.User.ToString());
 
                 if (!_notifiable.HasNotification)
                     return CustomResponse(userId);
+
+                await CreateRoles();
+
+                await _userManager.AddToRoleAsync(identityUser, UserProfileEnum.User.ToString());
 
                 if (userId != Guid.Empty)
                     await _userService.DeleteAsync(userId);
